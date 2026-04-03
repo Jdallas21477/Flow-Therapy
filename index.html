@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow Therapy  Flow Therapy.  Prepared by Rogue Marketing</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0D0F14;--surface:#141720;--surface2:#1C2030;--border:#242840;
+  --accent:#1B3A6B;--accent-bright:#2557A7;--accent-glow:rgba(27,58,107,.15);
+  --gold:#C8A951;--gold-glow:rgba(200,169,81,.12);
+  --text:#F0EDE8;--text-muted:#7A8094;--text-subtle:#383D52;
+  --font:'DM Sans',sans-serif;--font-display:'Playfair Display',serif;
+}
+html,body{width:100%;height:100%;background:var(--bg);font-family:var(--font);
+  color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased;}
+#deck{width:100vw;height:100vh;position:relative;overflow:hidden;}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:6vh 8vw;opacity:0;transform:translateY(24px);
+  transition:opacity .4s cubic-bezier(.4,0,.2,1),transform .4s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;z-index:1;}
+.slide.active{opacity:1;transform:translateY(0);pointer-events:all;z-index:2;}
+.slide.out{opacity:0;transform:translateY(-24px);}
+
+/* UI Chrome */
+#counter{position:fixed;top:26px;right:68px;font-size:11px;font-weight:600;
+  letter-spacing:.1em;color:var(--text-subtle);z-index:100;}
+#counter b{color:var(--text-muted);}
+#nav-dots{position:fixed;right:24px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:7px;z-index:100;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text-subtle);
+  cursor:pointer;transition:all .2s;}
+.dot:hover{background:var(--text-muted);}
+.dot.on{background:var(--gold);transform:scale(1.4);}
+#footer{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:20px;z-index:100;}
+.logo-mark{font-family:var(--font);font-weight:800;font-size:11px;
+  letter-spacing:.22em;color:var(--text-subtle);}
+.logo-dot{color:var(--gold);}
+#hint{font-size:10px;color:var(--text-subtle);letter-spacing:.06em;}
+
+/* Atmosphere */
+.glow{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;}
+.glow-a{width:700px;height:700px;background:rgba(27,58,107,.06);top:-200px;right:-200px;}
+.glow-b{width:500px;height:500px;background:rgba(200,169,81,.04);bottom:-200px;left:-150px;}
+
+/* Shared type */
+.eyebrow{font-size:clamp(9px,1vw,11px);font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:18px;}
+.hl{color:var(--gold);font-style:normal;}
+.hl-navy{color:var(--accent-bright);font-style:normal;}
+
+/* ── LAYOUT A: Statement ── */
+.l-statement{display:flex;flex-direction:column;align-items:center;
+  text-align:center;max-width:900px;}
+.l-statement .big{font-family:var(--font-display);
+  font-size:clamp(48px,8vw,104px);font-weight:800;line-height:1.0;
+  letter-spacing:-2px;margin-bottom:28px;}
+.l-statement .sub{font-size:clamp(14px,1.6vw,20px);font-style:italic;
+  color:var(--text-muted);line-height:1.65;margin-bottom:32px;max-width:600px;}
+.rule{width:40px;height:2px;background:var(--gold);margin:0 auto 24px;}
+.byline{font-size:11px;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--text-subtle);}
+
+/* ── LAYOUT B: Split ── */
+.l-split{display:grid;grid-template-columns:1fr 1fr;gap:60px;
+  max-width:1080px;width:100%;align-items:center;}
+.l-split .big{font-family:var(--font-display);
+  font-size:clamp(30px,4.8vw,60px);font-weight:800;line-height:1.06;
+  letter-spacing:-1.5px;margin-bottom:16px;}
+.l-split .desc{font-size:clamp(13px,1.4vw,16px);color:var(--text-muted);line-height:1.7;}
+.feat-list{display:flex;flex-direction:column;gap:10px;}
+.feat{display:flex;align-items:flex-start;gap:14px;padding:15px 18px;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.fdot{width:6px;height:6px;border-radius:50%;background:var(--gold);
+  margin-top:6px;flex-shrink:0;}
+.ft{font-size:clamp(12px,1.3vw,15px);font-weight:600;color:var(--text);line-height:1.3;}
+.fs{font-size:clamp(10px,1.05vw,13px);color:var(--text-muted);margin-top:3px;line-height:1.45;}
+
+/* ── LAYOUT C: Grid ── */
+.l-section{display:flex;flex-direction:column;align-items:flex-start;
+  width:100%;max-width:1080px;}
+.l-section .big{font-family:var(--font-display);
+  font-size:clamp(32px,5vw,64px);font-weight:800;line-height:1.05;
+  letter-spacing:-2px;margin-bottom:32px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;width:100%;}
+.card{background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:20px 24px;}
+.card.hi{border-color:var(--gold);box-shadow:inset 0 0 50px var(--gold-glow);}
+.c-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:8px;}
+.c-title{font-size:clamp(13px,1.5vw,17px);font-weight:700;color:var(--text);
+  margin-bottom:6px;line-height:1.25;}
+.c-body{font-size:clamp(11px,1.1vw,13px);color:var(--text-muted);line-height:1.6;}
+
+/* ── LAYOUT E: List ── */
+.l-list{display:flex;flex-direction:column;align-items:flex-start;
+  width:100%;max-width:960px;}
+.l-list .big{font-family:var(--font-display);
+  font-size:clamp(32px,5vw,64px);font-weight:800;line-height:1.05;
+  letter-spacing:-2px;margin-bottom:28px;}
+.step-list{display:flex;flex-direction:column;gap:10px;width:100%;}
+.step{display:flex;align-items:flex-start;gap:20px;padding:16px 20px;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.step.hi{border-color:var(--gold);box-shadow:inset 0 0 40px var(--gold-glow);}
+.step-num{font-family:var(--font-display);font-size:22px;font-weight:700;
+  color:var(--gold);line-height:1;flex-shrink:0;width:28px;}
+.step-body .ft{font-size:clamp(13px,1.4vw,16px);font-weight:600;
+  color:var(--text);margin-bottom:3px;}
+.step-body .fs{font-size:clamp(10px,1.1vw,13px);color:var(--text-muted);line-height:1.45;}
+</style>
+</head>
+<body>
+<div id="deck">
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+  <div id="counter"><b>01</b> / 5</div>
+  <div id="nav-dots"></div>
+  <div id="footer">
+    <span class="logo-mark">ROGUE<span class="logo-dot">·</span>MARKETING</span>
+    <span id="hint">← → navigate &nbsp;·&nbsp; F fullscreen</span>
+  </div>
+
+  <!-- ═══ SLIDE 1: Title  Layout A ═══ -->
+  <div class="slide active">
+    <div class="l-statement">
+      <div class="eyebrow">ROGUE MARKETING · FLOW THERAPY</div>
+      <h1 class="big">Your Growth.<br><em class="hl">Fully Executed.</em></h1>
+      <p class="sub">A partner who thinks before spending, executes without being managed, and keeps every dollar pointed at what moves the business forward.</p>
+      <div class="rule"></div>
+      <div class="byline">APRIL 2026</div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2: The Reality  Layout B ═══ -->
+  <div class="slide">
+    <div class="l-split">
+      <div>
+        <div class="eyebrow">THE REALITY</div>
+        <h2 class="big">Big Goals.<br><em class="hl">Limited</em><br>Bandwidth.</h2>
+        <p class="desc">Flow Therapy has the clinical credibility, the patient outcomes, and the expansion ambition. What's missing is the execution infrastructure to match  and the bandwidth to build it while still running the business.</p>
+      </div>
+      <div class="feat-list">
+        <div class="feat">
+          <div class="fdot"></div>
+          <div>
+            <div class="ft">Chairs need filling before new markets open</div>
+            <div class="fs">Existing location volume is the fastest path to growth  not just building brand awareness.</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="fdot"></div>
+          <div>
+            <div class="ft">The referral engine isn't systematized</div>
+            <div class="fs">More than 1,000 clinicians refer patients to Flow Therapy every year. That relationship is too important to leave unmanaged.</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="fdot"></div>
+          <div>
+            <div class="ft">Marketing and patient intake aren't connected</div>
+            <div class="fs">Patients entering the top of the funnel can fall through the cracks before completing all 35 treatments.</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="fdot"></div>
+          <div>
+            <div class="ft">Every new market starts from scratch</div>
+            <div class="fs">No repeatable go-to-market playbook  yet geographic expansion is the stated goal.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: How the Model Works  Layout E ═══ -->
+  <div class="slide">
+    <div class="l-list">
+      <div class="eyebrow">THE ROGUE HYBRID MODEL</div>
+      <h2 class="big">Strategy <em class="hl">Before</em> Spend.</h2>
+      <div class="step-list">
+        <div class="step hi">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <div class="ft">Planning, Prioritization &amp; Oversight  $3,000 / month</div>
+            <div class="fs">Rogue integrates into your business, audits systems, maps priorities, and confirms exactly where production hours will move the needle most  before a single one is spent.</div>
+          </div>
+        </div>
+        <div class="step hi">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <div class="ft">Production Hours  Pre-Purchased, Deployed on Your Terms</div>
+            <div class="fs">200 hours of execution capacity purchased in advance. Hours are not deployed until PPO has confirmed where they will have the greatest impact. Execution is never ahead of strategy.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <div class="ft">Full Visibility Into Every Hour Spent</div>
+            <div class="fs">Every hour is estimated in advance, tracked in real time, and applied only to approved, prioritized initiatives. No surprises, no disconnected activity.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <div class="ft">Rogue Owns the Prioritization  You Stay in the CEO Seat</div>
+            <div class="fs">Rogue brings decisions to you, not questions. You are never the project manager of this engagement. That is the problem we exist to solve.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: What Hours Do  Layout C 3-col ═══ -->
+  <div class="slide">
+    <div class="l-section">
+      <div class="eyebrow">YOUR INVESTMENT AT WORK</div>
+      <h2 class="big">Hours Spent on What <em class="hl">Moves</em> the Business.</h2>
+      <div class="grid3">
+        <div class="card hi">
+          <div class="c-label">Patient Growth</div>
+          <div class="c-title">Fill More Chairs</div>
+          <div class="c-body">Campaigns that drive qualified patients into your intake funnel and keep them engaged through all 35 treatments.</div>
+        </div>
+        <div class="card hi">
+          <div class="c-label">Physician Referrals</div>
+          <div class="c-title">Systematize the Referral Engine</div>
+          <div class="c-body">Sales enablement and nurture programs that protect and grow cardiologist relationships at scale  not one at a time.</div>
+        </div>
+        <div class="card hi">
+          <div class="c-label">Operations</div>
+          <div class="c-title">Connect ECW &amp; Zoho</div>
+          <div class="c-body">Intake, follow-up, and communication workflows built across your existing systems so no patient falls through the cracks.</div>
+        </div>
+        <div class="card">
+          <div class="c-label">Market Expansion</div>
+          <div class="c-title">A Playbook That Scales</div>
+          <div class="c-body">A repeatable go-to-market framework for each new location  local SEO, provider outreach, and community awareness built to replicate.</div>
+        </div>
+        <div class="card">
+          <div class="c-label">Category Awareness</div>
+          <div class="c-title">Educate the Market on EECP</div>
+          <div class="c-body">Content strategy that builds EECP awareness from the ground up  turning unfamiliarity into qualified patient volume.</div>
+        </div>
+        <div class="card">
+          <div class="c-label">Brand</div>
+          <div class="c-title">Consistent Across Every Location</div>
+          <div class="c-body">Brand standards and creative that hold as you scale  so location 11 looks and feels exactly like location 1.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5: Next Steps  Layout C 2x2 ═══ -->
+  <div class="slide">
+    <div class="l-section">
+      <div class="eyebrow">WHERE WE START</div>
+      <h2 class="big">Four Priorities.<br><em class="hl">One Clear</em> Roadmap.</h2>
+      <div class="grid">
+        <div class="card hi">
+          <div class="c-label">Priority 01 · Content</div>
+          <div class="c-title">Turn 20 Years of Patient Stories Into Owned Authority</div>
+          <div class="c-body">The Resource section is republished research. The opportunity is original thought leadership built from Flow Therapy's own outcomes  content that earns trust, drives SEO, and no competitor can replicate.</div>
+        </div>
+        <div class="card hi">
+          <div class="c-label">Priority 02 · Category Awareness</div>
+          <div class="c-title">Educate Patients and Cardiologists on EECP</div>
+          <div class="c-body">EECP is covered by insurance and proven by outcomes  but most patients and many physicians don't know it exists. Growth depends on closing that awareness gap across both audiences simultaneously.</div>
+        </div>
+        <div class="card">
+          <div class="c-label">Priority 03 · Paid Media</div>
+          <div class="c-title">Activate the Video Library. Capture High-Intent Search.</div>
+          <div class="c-body">Strong testimonials sit unused. High-intent patients searching for non-surgical heart treatment alternatives aren't being captured. Paid social and SEM are the fastest path to qualified volume.</div>
+        </div>
+        <div class="card">
+          <div class="c-label">Priority 04 · Expansion</div>
+          <div class="c-title">Build the Playbook Before the Next Market Opens</div>
+          <div class="c-body">10 locations and growing  but no repeatable launch framework. Rogue builds the go-to-market system once, so every new market entry runs faster and costs less than the one before it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: Closing  Layout A ═══ -->
+  <div class="slide">
+    <div class="l-statement">
+      <div class="eyebrow">THE BOTTOM LINE</div>
+      <h1 class="big">Move Further.<br><em class="hl">Faster.</em></h1>
+      <p class="sub">The best use of your hours is knowing which ones not to spend. PPO is that decision. Everything else follows from it.</p>
+      <p class="sub" style="margin-top:-16px;font-size:clamp(12px,1.3vw,16px);color:var(--text-subtle);">Execution without direction is just activity. PPO exists to make sure your hours go to work  not just to work.</p>
+      <div class="rule"></div>
+      <div class="byline">JAMES LOOMSTEIN · MANAGING PARTNER · ROGUE MARKETING · GOROGUE.NET</div>
+    </div>
+  </div>
+
+</div>
+<script>
+(function(){
+  const slides=Array.from(document.querySelectorAll('.slide'));
+  const total=slides.length;
+  let cur=0;
+  const dotsEl=document.getElementById('nav-dots');
+  slides.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' on':'');
+    d.addEventListener('click',()=>go(i));
+    dotsEl.appendChild(d);
+  });
+  function updateUI(){
+    document.getElementById('counter').innerHTML=
+      '<b>'+String(cur+1).padStart(2,'0')+'</b> / '+total;
+    dotsEl.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  }
+  function go(n){
+    if(n===cur)return;
+    slides[cur].classList.add('out');
+    slides[cur].classList.remove('active');
+    setTimeout(()=>slides[n].classList.remove('out'),400);
+    cur=Math.max(0,Math.min(total-1,n));
+    slides[cur].classList.add('active');
+    updateUI();
+  }
+  function next(){if(cur<total-1)go(cur+1);}
+  function prev(){if(cur>0)go(cur-1);}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')next();
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();
+    if(e.key==='f'||e.key==='F')
+      document.fullscreenElement?
+        document.exitFullscreen():
+        document.documentElement.requestFullscreen();
+  });
+  let tx=0;
+  document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=tx-e.changedTouches[0].clientX;
+    if(Math.abs(dx)>40)dx>0?next():prev();
+  },{passive:true});
+  updateUI();
+})();
+</script>
+</body>
+</html>
